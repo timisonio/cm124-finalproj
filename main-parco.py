@@ -27,24 +27,40 @@ class Chromosome:
                 print("length error")
                 sys.exit()
 
+
+def hc(c, S, M):
+    count0 = 0
+    count1 = 0
+    for read in S:
+        if read[c] == '0':
+            count0 += 1
+        elif read[c] == '1':
+            count1 += 1
+    if count0 > count1:
+        return '0'
+    elif count1 > count0:
+        return '1'
+    else:
+        return '-'
+            
+                
+def h(S, M, genome_length):
+    consensus = [hc(c, S, M) for c in range(genome_length)]
+    return consensus
+
+def D(S, T):
+    to_return = 0
+    for i in range(len(S)):
+        if (S[i] == '0' and T[i] == '0') or (S[i] == '1' and T[i] == '1'):
+            to_return += 1
+        elif (S[i] == '0' and T[i] == '1') or (S[i] == '1' and T[i] == '0'):
+            to_return += -1
+        else:
+            to_return += 0
+    return to_return
+
 if __name__ == "__main__":
     with open(sys.argv[1]) as infile:
-        # reads = []
-        # for line in infile:
-        #     genome_length = len(line.strip())
-        #     read_contents = []
-        #     read_offset = 0
-        #     read_started = False
-        #     for char in line:
-        #         if char == '0' or char == '1':
-        #             read_contents.append(char)
-        #             read_started = True
-        #         else:
-        #             if read_started is False:
-        #                 read_offset += 1
-        #                 read_contents = ''.join(read_contents)
-        #     reads.append(Read(read_contents, read_offset))
-
         reads = [line.strip() for line in infile]
     
     reads_only = [ ''.join([char for char in read if char != '-']) for read in reads]
@@ -79,32 +95,28 @@ if __name__ == "__main__":
     while len(duplicate_read_indices) > 0:
         duplicate_read_indices.pop()
 
-    chr1_updated = ['-' for i in range(genome_length)]
-    chr2_updated = ['-' for i in range(genome_length)]
-    for read in reads:
-        entire_read_maps = True
-        for char_index in range(len(read)):
-            if chr1.contents[char_index] != '-' and read[char_index] != '-' and chr1.contents[char_index] != read[char_index]:
-                entire_read_maps = False
-                break
-        if entire_read_maps is True:
-            for char_index in range(len(read)):
-                if chr1.contents[char_index] == '-':
-                    if chr1_updated[char_index] == '-':
-                        chr1_updated[char_index] = read[char_index]
-                    elif chr1_updated[char_index] != read[char_index]:
-                        chr2_updated[char_index] = read[char_index]
 
-    #print(chr1_updated)
+    s1 = set()
+    s2 = set()
 
-    for char_index in range(len(chr1_updated)):
-        if chr1_updated[char_index] not in "-?":
-            chr1.contents[char_index] = chr1_updated[char_index]
-                        
-#        print(''.join(chr1.contents))
-            
+    s1.add(reads[0])
+
+    for read in reads[1:]:
+        if D(read, h(s1, reads, genome_length)) >= D(read, h(s2, reads, genome_length)):
+            s1.add(read)
+        else:
+            s2.add(read)
+
+ #   print(s1)
+#
+  #  print()
+ #   print(s2)
         
     
-    print(''.join(chr1.contents))
-    print(''.join(chr2.contents))
+    # print(''.join(chr1.contents))
+    # print(''.join(chr2.contents))
+
+    print(''.join(h(s1, reads, genome_length)))
+#    print()
+    print(''.join(h(s2, reads, genome_length)))
     
