@@ -18,14 +18,8 @@ class Read:
         self.pos = pos
 
 class Chromosome:
-    def __init__(self, length, contents=None):
+    def __init__(self, length):
         self.contents = ['-' for i in range(length)]
-        if contents != None:
-            if length == len(contents):
-                self.contents = contents
-            else:
-                print("length error")
-                sys.exit()
 
 if __name__ == "__main__":
     with open(sys.argv[1]) as infile:
@@ -46,8 +40,6 @@ if __name__ == "__main__":
         #     reads.append(Read(read_contents, read_offset))
 
         reads = [line.strip() for line in infile]
-    
-    reads_only = [ ''.join([char for char in read if char != '-']) for read in reads]
 
     genome_length = len(reads[0])
 
@@ -67,19 +59,7 @@ if __name__ == "__main__":
             chr1.contents[pos] = list(versions.keys())[0]  # take the first member of the keys list... the only member
             chr2.contents[pos] = list(versions.keys())[0]
 
-    # get rid of duplicate reads
-    duplicate_read_indices = set()
-    for read_index in range(len(reads)):
-        for read_index_2 in range(read_index + 1, len(reads)):
-            if(read_index_2 > read_index + 20):
-                # don't look too far
-                break
-            if reads[read_index] == reads[read_index_2]:
-                duplicate_read_indices.add(read_index_2)
-    while len(duplicate_read_indices) > 0:
-        duplicate_read_indices.pop()
         
-    
     print(''.join(chr1.contents))
     print(''.join(chr2.contents))
     
